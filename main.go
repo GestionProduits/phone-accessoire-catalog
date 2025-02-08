@@ -2,52 +2,52 @@ package main
 
 import (
     "os"
-	"github.com/joho/godotenv"
-	"context"
-	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"log"
-	"net/http"
+    "github.com/joho/godotenv"
+    "context"
+    "github.com/gofiber/fiber/v2"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "log"
+    "net/http"
 )
 
 var db *pgxpool.Pool
 
 type Product struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
+    ID          int     `json:"id"`
+    Name        string  `json:"name"`
+    Description string  `json:"description"`
+    Price       float64 `json:"price"`
 }
 
-func main() {
-	// Charger les variables d'environnement
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+// Handler est la fonction exportée attendue par Vercel
+func Handler(w http.ResponseWriter, r *http.Request) {
+    app := fiber.New()
 
-	// Charger la chaîne de connexion à partir des variables d'environnement
-	dbURL := os.Getenv("DATABASE_URL")
-	db, err = pgxpool.New(context.Background(), dbURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-    // Initialiser Fiber
-	app := fiber.New()
+    // Charger les variables d'environnement
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
 
-	// Routes
-	app.Get("/products", getProducts)
-	app.Get("/products/:id", getProduct)
-	app.Post("/products", createProduct)
-	app.Put("/products/:id", updateProduct)
-	app.Delete("/products/:id", deleteProduct)
+    // Charger la chaîne de connexion à partir des variables d'environnement
+    dbURL := os.Getenv("DATABASE_URL")
+    db, err = pgxpool.New(context.Background(), dbURL)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
 
-	log.Fatal(app.Listen(":3000"))
+    // Routes
+    app.Get("/products", getProducts)
+    app.Get("/products/:id", getProduct)
+    app.Post("/products", createProduct)
+    app.Put("/products/:id", updateProduct)
+    app.Delete("/products/:id", deleteProduct)
+
+    // Vercel attend une réponse HTTP standard
+    app.Listener = http.NewServeMux()
+    app.Listen(":3000")
 }
-
-
-
 
 // Récupérer tous les produits  
 func getProducts(c *fiber.Ctx) error {  
