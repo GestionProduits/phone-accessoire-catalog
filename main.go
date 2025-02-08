@@ -44,9 +44,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     app.Put("/products/:id", updateProduct)
     app.Delete("/products/:id", deleteProduct)
 
-    // Vercel attend une réponse HTTP standard
-    app.Listener = http.NewServeMux()
-    app.Listen(":3000")
+    // Utiliser un handle HTTP standard pour servir les requêtes vers Fiber
+    app.Handler()(w, r)
 }
 
 // Récupérer tous les produits  
