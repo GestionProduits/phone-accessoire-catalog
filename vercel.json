@@ -8,7 +8,10 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "main.go"
+      "dest": "/main.go"
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url"
+  }
 }
