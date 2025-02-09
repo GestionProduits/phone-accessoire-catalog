@@ -1,3 +1,4 @@
+//main: point d'entré
 package main
 
 import (
